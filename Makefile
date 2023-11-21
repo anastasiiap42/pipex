@@ -1,10 +1,12 @@
+.SILENT:
+
 NAME := pipex
 
 COMPILER := cc
 
 FLAGS := -Wall -Wextra -Werror
 
-SRCS := 
+SRCS := pipex.c
 
 OBJS := $(SRCS:%.c=%.o)
 

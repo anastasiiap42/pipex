@@ -6,7 +6,7 @@
 /*   By: apashkov <apashkov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 10:02:00 by apashkov          #+#    #+#             */
-/*   Updated: 2023/11/15 12:25:06 by apashkov         ###   ########.fr       */
+/*   Updated: 2023/11/21 18:17:44 by apashkov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ size_t		ft_strlen(const char *string);
 char		*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 int			ft_strncmp(char *s1, char *s2, unsigned int n);
 char		*ft_strnstr(const char *str, const char *to_find, size_t s);
+char		*ft_strstr(char *str, char *to_find);
 char		*ft_strtrim(char const *s1, char const *set);
 char		*ft_strrchr(const char *string, int ch);
 char		*ft_substr(char const *s, unsigned int start, size_t len);

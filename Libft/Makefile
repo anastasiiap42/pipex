@@ -1,3 +1,5 @@
+.SILENT:
+
 NAME := libft.a
 
 COMPILER := cc
@@ -33,6 +35,7 @@ ft_strlen.c\
 ft_strmapi.c\
 ft_strncmp.c\
 ft_strnstr.c\
+ft_strstr.c\
 ft_strrchr.c\
 ft_strtrim.c\
 ft_substr.c\

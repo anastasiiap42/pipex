@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: apashkov <apashkov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/17 12:33:57 by apashkov          #+#    #+#             */
-/*   Updated: 2023/11/17 12:34:28 by apashkov         ###   ########.fr       */
+/*   Created: 2023/11/21 18:37:44 by apashkov          #+#    #+#             */
+/*   Updated: 2023/11/21 18:38:32 by apashkov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-
+# include <stdio.h>
+# include "./Libft/libft.h"
 
 #endif
