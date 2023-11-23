@@ -12,18 +12,19 @@
 
 #include "pipex.h"
 
-void	child_process(int file1)
+void	child1_process(int file1)
 {
 	if (dup2(file1, 0) < 0)
 		return (perror("Dup2: "));
 	if (dup2(end[1], 1) < 0)
 		return (perror("Dup2: "));
+	execve();
 	close(end[0]);
 	close (file1);
 	exit(1);
 }
 
-void	parent_process(int file2)
+void	child2_process(int file2)
 {
 	int	status;
 
@@ -45,16 +46,20 @@ void	pipex(int file1, int file2)
 
 	if (pipe(end) == -1)
 		return (perror("Pipe: "));
-	child = fork();
-	if (child < 0)
+	child1 = fork();
+	if (child1 < 0)
 		return (perror("Fork: "));
-	if (child == 0)
-		child_process(file1);
-	else
-	{
-		waitpid(child, &status, 0);
-		parent_process(file2);
-	}
+	if (child1 == 0)
+		child1_process(file1);
+	child2 = fork();
+	if (child2 < 0)
+		return (perror("Fork: "));
+	if (child2 == 0)
+		child2_process(file1);
+	close(end[0]);
+	close(end[1]);
+	waitpid(child1, &status, 0);
+	waitpid(child2, &status, 0):
 }
 
 /* void print_split(char **argv) 
