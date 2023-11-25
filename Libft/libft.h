@@ -16,7 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-char		*free_array(char **array);
+char	    *free_arr(char **array);
 long int	ft_atoi(const char *s);
 void		ft_bzero(void *s, size_t n);
 void		*ft_calloc(size_t nmemb, size_t size);

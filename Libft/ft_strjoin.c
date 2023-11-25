@@ -19,7 +19,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	i;
 
 	x = 0;
-	i = ft_strlen(s1);
+	i = ft_strlen(s1) + 1;
 	new = (char *)malloc((i + ft_strlen(s2) + 1) * sizeof(char));
 	if (!(new))
 		return (NULL);
@@ -28,6 +28,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		new[x] = s1[x];
 		x++;
 	}
+	new[x] = '/';
 	x = 0;
 	while (s2[x] != '\0')
 	{

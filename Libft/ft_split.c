@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-char	*free_array(char **array)
+char	*free_arr(char **array)
 {
 	int	i;
 
@@ -83,7 +83,7 @@ char	**ft_split(char const *s, char c)
 		{
 			arr[i] = put_words(s, c);
 			if (!(arr[i]))
-				return (free_array(arr), NULL);
+				return (free_arr(arr), NULL);
 			len = ft_strlen(arr[i]);
 			i++;
 			s = s + len;
