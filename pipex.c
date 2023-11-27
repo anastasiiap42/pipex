@@ -29,8 +29,8 @@ void	execute(char **paths, char **args, char **envp)
 	char	*the_path;
 	int		i;
 
-	i = 0;
-	while (paths[i])
+	i = -1;
+	while (paths[++i])
 	{
 		the_path = ft_strjoin(paths[i], args[0]);
 		if (!the_path)
@@ -39,16 +39,15 @@ void	execute(char **paths, char **args, char **envp)
 			free_arr(paths);
 			free(the_path);
 		}
-		if (access(the_path, F_OK | X_OK) == 0)
+		if (access(the_path, X_OK) == 0)
 		{
 			if (execve(the_path, args, envp) == -1)
+			{
 				perror("Execution failed");
+				free_arr(args);
+			}
 		}
-		else
-		{
-			free(the_path);
-			i++;
-		}
+		free(the_path);
 	}
 }
 
@@ -68,7 +67,7 @@ void	*child_p(char **paths, int end[], char **envp, char **argv)
 	close(end[0]);
 	close (infile);
 	execute(paths, args, envp);
-	exit(1);
+	exit(0);
 }
 
 void	*parent_p(char **paths, int end[], char **envp, char **argv)
@@ -87,7 +86,7 @@ void	*parent_p(char **paths, int end[], char **envp, char **argv)
 	close(end[1]);
 	close(outfile);
 	execute(paths, args, envp);
-	exit (1);
+	exit(0);
 }
 
 void	*pipex(char **paths, char **argv, char **envp)
@@ -108,8 +107,6 @@ void	*pipex(char **paths, char **argv, char **envp)
 		waitpid(child, &wstatus, 0);
 		parent_p(paths, end, envp, argv);
 	}
-	/*close(end[0]);
-	close(end[1]);*/
 	exit(0);
 }
 

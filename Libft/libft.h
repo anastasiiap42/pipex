@@ -16,8 +16,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+long int    ft_atoi(const char *s);
 char        *free_arr(char **array);
-long int	ft_atoi(const char *s);
 void		ft_bzero(void *s, size_t n);
 void		*ft_calloc(size_t nmemb, size_t size);
 int			ft_isalnum(int c);
