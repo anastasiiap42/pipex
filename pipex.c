@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-void print_split(char **argv) 
+/*void print_split(char **argv) 
 {
 	int i = 0;
 	while (argv[i])
@@ -22,25 +22,23 @@ void print_split(char **argv)
 	}
 	printf("[%s]\n", argv[i]);
 	free_arr(argv);
-}
+}*/
 
-void	*child_p(int file1, char **paths, int end[], char **envp, char **argv)
+void	execute(char **paths, char **args, char **envp)
 {
-	int		i;
 	char	*the_path;
-	char	**args;
+	int		i;
 
 	i = 0;
-	args = ft_split(argv[2], ' ');
-	if (!args)
-		return (perror("Split failed:"), free_arr(paths));
-	if (dup2(file1, 0) < 0 || dup2(1, end[1]) < 0)
-		 return (perror("Dup2: "), free_arr(args));
 	while (paths[i])
 	{
 		the_path = ft_strjoin(paths[i], args[0]);
 		if (!the_path)
-			return (perror("Strjoin failed"), free_arr(paths));
+		{
+			perror("Strjoin failed");
+			free_arr(paths);
+			free(the_path);
+		}
 		if (access(the_path, F_OK | X_OK) == 0)
 		{
 			if (execve(the_path, args, envp) == -1)
@@ -52,40 +50,51 @@ void	*child_p(int file1, char **paths, int end[], char **envp, char **argv)
 			i++;
 		}
 	}
+}
+
+void	*child_p(char **paths, int end[], char **envp, char **argv)
+{
+	char	**args;
+	int		infile;
+
+	infile = open(argv[1], O_RDONLY);
+	if (infile < 0)
+		return (perror("Open failed: "), free_arr(paths));
+	args = ft_split(argv[2], ' ');
+	if (!args)
+		return (perror("Split failed:"), free_arr(paths));
+	if (dup2(infile, 0) < 0 || dup2(end[1], 1) < 0)
+		return (perror("Dup2: "), free_arr(args));
 	close(end[0]);
-	close (file1);
+	close (infile);
+	execute(paths, args, envp);
 	exit(1);
 }
 
-
-void	*parent_p(int file2, char **paths, int end[], char **envp, char **argv)
+void	*parent_p(char **paths, int end[], char **envp, char **argv)
 {
-	int		i;
-	char	*the_path;
 	char	**args;
+	int		outfile;
 
-	i = 0;
+	outfile = open(argv[4], O_RDWR);
+	if (outfile < 0)
+		return (perror("Open failed: "), free_arr(paths));
 	args = ft_split(argv[3], ' ');
 	if (!args)
 		return (perror("Split failed:"), free_arr(paths));
-	if (dup2(end[0], 0) < 0 || dup2(1, file2) < 0)
+	if (dup2(end[0], 0) < 0 || dup2(outfile, 1) < 0)
 		return (perror("Dup2: "), free_arr(args));
-	while (access(paths[i], X_OK) == -1)
-		i++;
-	the_path = ft_strjoin(paths[i], args[0]);
-	if (!the_path)
-		return (perror("Strjoin failed"), free_arr(paths));
 	close(end[1]);
-	if (execve(the_path, args, envp) == -1)
-		return (perror("Execve: "), free_arr(args));
-	close(file2);
+	close(outfile);
+	execute(paths, args, envp);
 	exit (1);
 }
 
-void	*pipex(int file1, int file2, char **paths, char **argv, char **envp)
+void	*pipex(char **paths, char **argv, char **envp)
 {
 	int		end[2];
 	pid_t	child;
+	int		wstatus;
 
 	if (pipe(end) == -1)
 		return (perror("Pipe: "), free_arr(paths));
@@ -93,33 +102,27 @@ void	*pipex(int file1, int file2, char **paths, char **argv, char **envp)
 	if (child < 0)
 		return (perror("Fork: "), free_arr(paths));
 	else if (child == 0)
-	{
-		child_p(file1, paths, end, envp, argv);
-		printf("Child executed\n");
-	}
-	/*else
+		child_p(paths, end, envp, argv);
+	else
 	{
 		waitpid(child, &wstatus, 0);
-		parent_p(file2, cmd, end, envp, argv);
-	}*/
-	close(end[0]);
-	close(end[1]);
-	close(file2);
+		parent_p(paths, end, envp, argv);
+	}
+	/*close(end[0]);
+	close(end[1]);*/
 	exit(0);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	int	infile;
-	int outfile;
-	char *the_path;
-	char **poss_paths;
-	int	i;
+	char	*the_path;
+	char	**poss_paths;
+	int		i;
 
 	i = 0;
 	the_path = NULL;
 	if (argc != 5)
-		return (perror("Invalid input"), 1);
+		return (ft_putstr_fd("Invalid input\n", 2), 1);
 	while (the_path == NULL)
 	{
 		if (ft_strncmp("PATH=/", envp[i], 6) == 0)
@@ -129,9 +132,5 @@ int	main(int argc, char **argv, char **envp)
 	poss_paths = ft_split(the_path, ':');
 	if (!poss_paths)
 		return (perror("Split: "), free_arr(poss_paths), 1);
-	infile = open(argv[1], O_RDONLY);
-	outfile = open(argv[4], O_RDWR);
-	if (infile < 0 || outfile < 0)
-		return (perror("Open failed: "), 1);
-	pipex(infile, outfile, poss_paths, argv, envp);
+	pipex(poss_paths, argv, envp);
 }
