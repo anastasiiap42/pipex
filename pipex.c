@@ -35,14 +35,23 @@ void	*child_p(int file1, char **paths, int end[], char **envp, char **argv)
 	if (!args)
 		return (perror("Split failed:"), free_arr(paths));
 	if (dup2(file1, 0) < 0 || dup2(1, end[1]) < 0)
-		return (perror("Dup2: "), free_arr(args));
-	while (access(paths[i], F_OK | X_OK) == -1)
-		i++;
-	the_path = ft_strjoin(paths[i], args[0]);
-	if (!the_path)
-		return (perror("Strjoin failed"), free_arr(paths));
-	if (execve(the_path, args, envp) == -1)
-		return (perror("Execve"), free_arr(args));
+		 return (perror("Dup2: "), free_arr(args));
+	while (paths[i])
+	{
+		the_path = ft_strjoin(paths[i], args[0]);
+		if (!the_path)
+			return (perror("Strjoin failed"), free_arr(paths));
+		if (access(the_path, F_OK | X_OK) == 0)
+		{
+			if (execve(the_path, args, envp) == -1)
+				perror("Execution failed");
+		}
+		else
+		{
+			free(the_path);
+			i++;
+		}
+	}
 	close(end[0]);
 	close (file1);
 	exit(1);
@@ -66,9 +75,9 @@ void	*parent_p(int file2, char **paths, int end[], char **envp, char **argv)
 	the_path = ft_strjoin(paths[i], args[0]);
 	if (!the_path)
 		return (perror("Strjoin failed"), free_arr(paths));
+	close(end[1]);
 	if (execve(the_path, args, envp) == -1)
 		return (perror("Execve: "), free_arr(args));
-	close(end[1]);
 	close(file2);
 	exit (1);
 }
@@ -85,8 +94,8 @@ void	*pipex(int file1, int file2, char **paths, char **argv, char **envp)
 		return (perror("Fork: "), free_arr(paths));
 	else if (child == 0)
 	{
-		printf("Child executed\n");
 		child_p(file1, paths, end, envp, argv);
+		printf("Child executed\n");
 	}
 	/*else
 	{
@@ -110,12 +119,13 @@ int	main(int argc, char **argv, char **envp)
 	i = 0;
 	the_path = NULL;
 	if (argc != 5)
-	{
-		perror("Invalid input");
-		exit(EXIT_FAILURE);
-	}
+		return (perror("Invalid input"), 1);
 	while (the_path == NULL)
-		the_path = ft_strstr(envp[i++], "PATH=/");
+	{
+		if (ft_strncmp("PATH=/", envp[i], 6) == 0)
+			the_path = ft_strstr(envp[i], "PATH=/");
+		i++;
+	}
 	poss_paths = ft_split(the_path, ':');
 	if (!poss_paths)
 		return (perror("Split: "), free_arr(poss_paths), 1);
