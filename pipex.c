@@ -35,7 +35,6 @@ void	execute(char **paths, char **args, char **envp)
 		the_path = ft_strjoin(paths[i], args[0]);
 		if (!the_path)
 		{
-			perror("Strjoin failed");
 			free_arr(paths);
 			free(the_path);
 		}
@@ -43,7 +42,7 @@ void	execute(char **paths, char **args, char **envp)
 		{
 			if (execve(the_path, args, envp) == -1)
 			{
-				perror("Execution failed");
+				perror("Execve failed");
 				free_arr(args);
 			}
 		}
@@ -58,16 +57,24 @@ void	*child_p(char **paths, int end[], char **envp, char **argv)
 
 	infile = open(argv[1], O_RDONLY);
 	if (infile < 0)
-		return (perror("Open failed: "), free_arr(paths));
+	{
+		perror("Open failed: ");
+		free_arr(paths);
+		exit(1);
+	}
 	args = ft_split(argv[2], ' ');
-	if (!args)
-		return (perror("Split failed:"), free_arr(paths));
-	if (dup2(infile, 0) < 0 || dup2(end[1], 1) < 0)
-		return (perror("Dup2: "), free_arr(args));
+	if (!args || dup2(infile, 0) < 0 || dup2(end[1], 1) < 0)
+	{
+		if (args)
+			perror("Dup2 failed");
+		free_arr(paths);
+		free_arr(args);
+		exit(1);
+	}
 	close(end[0]);
 	close (infile);
 	execute(paths, args, envp);
-	exit(0);
+	exit(0); //do I need it?
 }
 
 void	*parent_p(char **paths, int end[], char **envp, char **argv)
@@ -75,31 +82,47 @@ void	*parent_p(char **paths, int end[], char **envp, char **argv)
 	char	**args;
 	int		outfile;
 
-	outfile = open(argv[4], O_RDWR);
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC);
 	if (outfile < 0)
-		return (perror("Open failed: "), free_arr(paths));
+	{
+		perror("Open failed: ");
+		free_arr(paths);
+		exit(1);
+	}
 	args = ft_split(argv[3], ' ');
-	if (!args)
-		return (perror("Split failed:"), free_arr(paths));
-	if (dup2(end[0], 0) < 0 || dup2(outfile, 1) < 0)
-		return (perror("Dup2: "), free_arr(args));
+	if (!args || dup2(end[0], 0) < 0 || dup2(outfile, 1) < 0)
+	{
+		if (args)
+			perror("Dup2 failed");
+		free_arr(paths);
+		free_arr(args);
+		exit(1);
+	}
 	close(end[1]);
 	close(outfile);
 	execute(paths, args, envp);
-	exit(0);
+	exit(0); //do I need it?
 }
 
-void	*pipex(char **paths, char **argv, char **envp)
+void	pipex(char **paths, char **argv, char **envp)
 {
 	int		end[2];
 	pid_t	child;
 	int		wstatus;
 
 	if (pipe(end) == -1)
-		return (perror("Pipe: "), free_arr(paths));
+	{
+		perror("Pipe: ");
+		free_arr(paths);
+		exit(1);
+	}
 	child = fork();
 	if (child < 0)
-		return (perror("Fork: "), free_arr(paths));
+	{
+		perror("Fork: ");
+		free_arr(paths);
+		exit(1);
+	}
 	else if (child == 0)
 		child_p(paths, end, envp, argv);
 	else
@@ -107,7 +130,6 @@ void	*pipex(char **paths, char **argv, char **envp)
 		waitpid(child, &wstatus, 0);
 		parent_p(paths, end, envp, argv);
 	}
-	exit(0);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -128,6 +150,11 @@ int	main(int argc, char **argv, char **envp)
 	}
 	poss_paths = ft_split(the_path, ':');
 	if (!poss_paths)
-		return (perror("Split: "), free_arr(poss_paths), 1);
+	{
+		free_arr(poss_paths);
+		exit(1);
+	}
 	pipex(poss_paths, argv, envp);
 }
+
+//Special edge cases: /dev/urandom and /dev/stdin?
