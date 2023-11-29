@@ -6,13 +6,13 @@
 /*   By: apashkov <apashkov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/21 11:49:59 by apashkov          #+#    #+#             */
-/*   Updated: 2023/11/29 18:46:44 by apashkov         ###   ########.fr       */
+/*   Updated: 2023/11/29 19:12:38 by apashkov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static void	*execute(char **paths, char **args, char **envp)
+static void	*execute(char **paths, char **args, char **envp, int end[])
 {
 	char	*the_path;
 	int		i;
@@ -27,11 +27,7 @@ static void	*execute(char **paths, char **args, char **envp)
 		{
 			free_arr(paths);
 			if (execve(the_path, args, envp) == -1)
-			{
-				perror("Execve failed");
-				free_arr(args);
-				exit(1);
-			}
+				error_handle(paths, 1, "Execve failed", end);
 		}
 		free(the_path);
 	}
@@ -64,7 +60,7 @@ static void	child1_p(char **paths, int end[], char **envp, char **argv)
 	close(end[0]);
 	close (infile);
 	close(end[1]);
-	execute(paths, args, envp);
+	execute(paths, args, envp, end);
 	exit(0);
 }
 
@@ -93,7 +89,7 @@ static void	child2_p(char **paths, int end[], char **envp, char **argv)
 	close(end[1]);
 	close(outfile);
 	close(end[0]);
-	execute(paths, args, envp);
+	execute(paths, args, envp, end);
 	exit(0);
 }
 
