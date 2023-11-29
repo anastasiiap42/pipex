@@ -6,7 +6,7 @@
 /*   By: apashkov <apashkov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 10:02:00 by apashkov          #+#    #+#             */
-/*   Updated: 2023/11/21 18:17:44 by apashkov         ###   ########.fr       */
+/*   Updated: 2023/11/29 15:47:12 by apashkov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-long int    ft_atoi(const char *s);
-char        *free_arr(char **array);
+long int	ft_atoi(const char *s);
+char		*free_arr(char **array);
 void		ft_bzero(void *s, size_t n);
 void		*ft_calloc(size_t nmemb, size_t size);
 int			ft_isalnum(int c);

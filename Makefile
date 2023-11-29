@@ -6,7 +6,8 @@ COMPILER := cc
 
 FLAGS := -Wall -Wextra -Werror
 
-SRCS := pipex.c
+SRCS := pipex.c\
+error.c
 
 OBJS := $(SRCS:%.c=%.o)
 

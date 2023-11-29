@@ -6,7 +6,7 @@
 /*   By: apashkov <apashkov@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/11 17:54:18 by apashkov          #+#    #+#             */
-/*   Updated: 2023/11/23 12:08:45 by apashkov         ###   ########.fr       */
+/*   Updated: 2023/11/29 17:35:05 by apashkov         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,15 @@ char	*free_arr(char **array)
 	int	i;
 
 	i = 0;
-	while (array[i])
+	if (array && array[i])
 	{
-		free(array[i]);
-		i++;
+		while (array[i])
+		{
+			free(array[i]);
+			i++;
+		}
+		free(array);
 	}
-	free(array);
 	return (NULL);
 }
 
@@ -62,6 +65,8 @@ static char	*put_words(char const *s, char c)
 		s++;
 	}
 	str = ft_substr(s - len, 0, len);
+	if (!str)
+		return (NULL);
 	return (str);
 }
 
