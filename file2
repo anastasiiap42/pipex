@@ -1,9 +1,0 @@
-total 44
-drwxrwxrwx+ 3 codespace root       4096 Nov 28 17:52 Libft
--rw-rw-rw-  1 codespace root        447 Nov 23 21:20 Makefile
--rw-rw-rw-  1 codespace codespace     0 Nov 28 13:11 file1
--rwx--x---  1 codespace codespace     0 Nov 28 17:02 file2
--rwxrwxrwx  1 codespace codespace 18136 Nov 28 19:11 pipex
--rw-rw-rw-  1 codespace root       3269 Nov 28 19:11 pipex.c
--rw-rw-rw-  1 codespace root       1071 Nov 27 12:59 pipex.h
--rw-rw-rw-  1 codespace codespace  5480 Nov 28 19:11 pipex.o
